@@ -1,8 +1,13 @@
 package com.experis.reto.dao.impl;
 
+import com.experis.reto.controller.CustomerController;
 import com.experis.reto.dao.CustomerDao;
 import com.experis.reto.entity.Customer;
 import com.experis.reto.util.DBConstant;
+import com.google.gson.Gson;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.RowMapper;
@@ -23,40 +28,33 @@ import java.util.Objects;
 @Configuration
 public class CustomerDaoImpl extends JdbcDaoSupport implements CustomerDao {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(CustomerController.class);	
+	private static final Gson GSON = new Gson();
+	
     @Autowired
     public CustomerDaoImpl(DataSource dataSource) {
         this.setDataSource(dataSource);
     }
 
-
-    @Override
-    public List<Customer> findAll() {
-
-        try {
-            return Objects.requireNonNull(getJdbcTemplate()).query(DBConstant.SELECT_CUSTOMER_ALL, new RowMapper<Customer>() {
-                @Override
-                public Customer mapRow(ResultSet resultSet, int i) throws SQLException {
-
-
-                    return new Customer(resultSet.getInt("id"),
-                            resultSet.getInt("year_old"),
-                            resultSet.getString("first_name"),
-                            resultSet.getString("last_name"),
-                            resultSet.getDate("birth_date"));
-                }
-            });
-        } catch (Exception ex) {
-            System.out.println("Exception:" + ex.getMessage());
-        }
-
-        return null;
-    }
-
+	@Override
+	public List<Customer> findAll() {
+		LOGGER.info("findAll()");
+		return getJdbcTemplate().query(DBConstant.SELECT_CUSTOMER_ALL, new RowMapper<Customer>() {
+			@Override
+			public Customer mapRow(ResultSet resultSet, int i) throws SQLException {
+				return new Customer(resultSet.getInt("id"), 
+						resultSet.getString("first_name"),
+						resultSet.getString("last_name"), 
+						resultSet.getDate("birth_date"), 
+						resultSet.getInt("age"));
+			}
+		});
+	}
+        
     @Override
     public Map getStatistics() {
-
+    	LOGGER.info("getStatistics()");
         try {
-
             return Objects.requireNonNull(getJdbcTemplate()).query(DBConstant.SELECT_CUSTOMER_STATISTICS, (ResultSet rs) -> {
                 HashMap<String, String> results = new HashMap<>();
                 while (rs.next()) {
@@ -65,26 +63,23 @@ public class CustomerDaoImpl extends JdbcDaoSupport implements CustomerDao {
                 }
                 return results;
             });
-
-
         } catch (Exception ex) {
-            System.out.println("Exception:" + ex.getMessage());
+        	LOGGER.error("Exception:" + ex.getMessage());
         }
-
         return null;
     }
 
     @Override
     public void insert(Customer customer) {
-
-        try {
-            Objects.requireNonNull(getJdbcTemplate()).update(DBConstant.INSERT_CUSTOMER,
-                    customer.getBirthDay(),
+    	LOGGER.info("insert() -> customer : {}", GSON.toJson(customer));
+    	try {
+            Objects.requireNonNull(getJdbcTemplate()).update(DBConstant.INSERT_CUSTOMER,                    
                     customer.getFirstName(),
                     customer.getLastName(),
+                    customer.getBirthDay(),
                     customer.getBirthDay());
         } catch (Exception ex) {
-            System.out.println("Exception:" + ex.getMessage());
+        	LOGGER.error("Exception:" + ex.getMessage());
         }
 
     }
