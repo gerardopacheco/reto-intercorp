@@ -5,25 +5,27 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Bean;
 
-//Tambien se pudo haber implementado lombox
-//import lombok.Data;
-
-//@Data
 public class Customer {
 
 	private int id;
 	private String firstName;
 	private String lastName;
-	private Date birthDay;
+	private Date birthDate;
 	private int age;
-	
-	public Customer(int id, String firstName, String lastName, Date birthDay, int age) {
+	private Date deathDateprob;
+
+	public Customer() {
+
+	}
+
+	public Customer(int id, String firstName, String lastName, Date birthDate, int age, Date deathDateprob) {
 		super();
 		this.id = id;
 		this.firstName = firstName;
 		this.lastName = lastName;
-		this.birthDay = birthDay;
+		this.birthDate = birthDate;
 		this.age = age;
+		this.deathDateprob = deathDateprob;
 	}
 
 	public int getId() {
@@ -50,12 +52,12 @@ public class Customer {
 		this.lastName = lastName;
 	}
 
-	public Date getBirthDay() {
-		return birthDay;
+	public Date getBirthDate() {
+		return birthDate;
 	}
 
-	public void setBirthDay(Date birthDay) {
-		this.birthDay = birthDay;
+	public void setBirthDate(Date birthDate) {
+		this.birthDate = birthDate;
 	}
 
 	public int getAge() {
@@ -64,6 +66,14 @@ public class Customer {
 
 	public void setAge(int age) {
 		this.age = age;
+	}
+
+	public Date getDeathDateprob() {
+		return deathDateprob;
+	}
+
+	public void setDeathDateprob(Date deathDateprob) {
+		this.deathDateprob = deathDateprob;
 	}
 
 }

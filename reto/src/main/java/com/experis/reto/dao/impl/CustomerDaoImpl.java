@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.support.JdbcDaoSupport;
+import org.springframework.jdbc.core.simple.ParameterizedBeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,19 +37,12 @@ public class CustomerDaoImpl extends JdbcDaoSupport implements CustomerDao {
         this.setDataSource(dataSource);
     }
 
-	@Override
+
+    @Override
 	public List<Customer> findAll() {
 		LOGGER.info("findAll()");
-		return getJdbcTemplate().query(DBConstant.SELECT_CUSTOMER_ALL, new RowMapper<Customer>() {
-			@Override
-			public Customer mapRow(ResultSet resultSet, int i) throws SQLException {
-				return new Customer(resultSet.getInt("id"), 
-						resultSet.getString("first_name"),
-						resultSet.getString("last_name"), 
-						resultSet.getDate("birth_date"), 
-						resultSet.getInt("age"));
-			}
-		});
+		RowMapper<Customer> customerMapper = ParameterizedBeanPropertyRowMapper.newInstance(Customer.class);
+		return getJdbcTemplate().query(DBConstant.SELECT_CUSTOMER_ALL, customerMapper);
 	}
         
     @Override
@@ -76,8 +70,8 @@ public class CustomerDaoImpl extends JdbcDaoSupport implements CustomerDao {
             Objects.requireNonNull(getJdbcTemplate()).update(DBConstant.INSERT_CUSTOMER,                    
                     customer.getFirstName(),
                     customer.getLastName(),
-                    customer.getBirthDay(),
-                    customer.getBirthDay());
+                    customer.getBirthDate(),
+                    customer.getBirthDate());
         } catch (Exception ex) {
         	LOGGER.error("Exception:" + ex.getMessage());
         }
